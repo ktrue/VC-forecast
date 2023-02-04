@@ -1,6 +1,6 @@
-# Pirateweather International forecast formatting script - multilingual
+# VisualCrossing.com International forecast formatting script - multilingual
 
-This script is based on the DarkSky DS-forecast.php script and uses the API (in DarkSky format) kindly provided by [https://visualcrossing.com](https://visualcrossing.com).  Since visualcrossing.com API only returns English text, a companion script **VC-forecast-lang.php** contains English->language lookups for use by **VC-forecast.php**.
+This script is based on the DarkSky DS-forecast.php script and uses the API kindly provided by [https://visualcrossing.com](https://visualcrossing.com).  A companion script **VC-forecast-lang.php** contains English->language lookups for use by **VC-forecast.php**.
 The current languages supported are:
 
 Afrikaans | български език | český jazyk | Català | Dansk | Nederlands | English | Suomi | Français | Deutsch | Ελληνικά | Magyar | Italiano | עִבְרִית | Norsk | Polski | Português | limba română | Español | Svenska | Slovenščina | Slovenčina | Srpski
@@ -9,12 +9,12 @@ Note: Version 2.5+ now includes a 7-day timeline display based on [Merry-Timelin
 
 In order to use this script you need to:
 
-1.  Register for and acquire a free Pirateweather API key.
+1.  Register for and acquire a free VisualCrossing.com API key.
     1.  Browse to [https://visualcrossing.com](https://visualcrossing.com) and sign up/in to acquire an API key.
     2.  insert the API key in **$VCAPIkey** in the VC-forecast.php script or as **$SITE['VCAPIkey']** in _Settings.php_ for Saratoga template users.
     3.  Customize the **$VCforecasts** array (or **$SITE['VCforecasts']** in _Settings.php_) with the location names, latitude/longitude for your forecasts. The first entry will be the default one for forecasts.
 2.  Use this script ONLY on your personal, non-commercial weather station website.
-3.  Leave attribution (and hotlink) to Pirateweather as the source of the data in the output of the script.
+3.  Leave attribution (and hotlink) to VisualCrossing.com as the source of the data in the output of the script.
 
 Adhere to these three requirements, and you should have fair use of this data from visualcrossing.com.
 
@@ -52,11 +52,13 @@ $cacheFileDir = './';                     // default cache file directory
 $cacheName = "VC-forecast-json.txt";      // locally cached page from VC
 $refetchSeconds = 3600;                   // cache lifetime (3600sec = 60 minutes)
 //
-// Units:
-// si: SI units (C,m/s,hPa,mm,km)
-// ca: same as si, except that windSpeed and windGust are in kilometers per hour
-// uk2: same as si, except that nearestStormDistance and visibility are in miles, and windSpeed and windGust in miles per hour
+// Units: 
+// base: SI units (K,m/s,hPa,mm,km)
+// metric: same as base, except that temp in C and windSpeed and windGust are in kilometers per hour
+// uk: same as metric, except that nearestStormDistance and visibility are in miles, and windSpeed and windGust in miles per hour
 // us: Imperial units (F,mph,inHg,in,miles)
+// 
+$showUnitsAs  = 'metric'; // ='us' for imperial, , ='metric' for metric, ='uk' for UK
 //
 $showUnitsAs  = 'ca'; // ='us' for imperial, , ='si' for metric, ='ca' for canada, ='uk2' for UK
 //
@@ -97,12 +99,12 @@ Be sure to include the trailing slash in the directory specification as shown in
 **='.gif';** for the Meteotriviglio animated GIF icon set.  
 **Saratoga template users:** Use the _Settings.php_ entry for **$SITE['fcsticonstype']** to specify this value.</dd>
 
-<dt>$VCforecasts = array(  
-// Location|forecast-URL (separated by | characters)  
-'Saratoga|37.27465,-122.02295',  
-'Auckland|-36.910,174.771', // Awhitu, Waiuku New Zealand  
-
-...  
+<dt>$VCforecasts = array(  <br>
+// Location|forecast-URL (separated by | characters) <br> 
+'Saratoga|37.27465,-122.02295', <br> 
+'Auckland|-36.910,174.771', // Awhitu, Waiuku New Zealand <br> 
+<br>
+... <br> 
 );</dt>
 
 <dd>This setting is the primary method of specifying the locations for forecasts. It allows the viewer to choose between forecasts for different areas based on a drop-down list box selection.  
@@ -132,11 +134,12 @@ Include the trailing slash in the directory specification.
 
 <dt>$showUnitsAs</dt>
 
-<dd>This setting controls the units of measure for the forecasts.  
-**='base'** SI units (K,m/s,hPa,mm,km)  
-**='metric'** same as si, except that temperature in C and windSpeed and windGust are in kilometers per hour  
-**='uk'** same as metric, except that nearestStormDistance and visibility are in miles, and windSpeed and windGust in miles per hour  
-**='us'** Imperial units (F,mph,inHg,in,miles)  
+<dd>This setting controls the units of measure for the forecasts. <br> 
+ ='base' SI units (K,m/s,hPa,mm,km)<br>  
+ ='metric' same as si, except that temperature in C and windSpeed and windGust are in kilometers per hour <br> 
+ ='uk' same as metric, except that nearestStormDistance and visibility are in miles, and windSpeed and windGust in miles per hour <br> 
+ ='us' Imperial units (F,mph,inHg,in,miles)<br>
+<br>
 **Saratoga template users:** This setting will be overridden by the **$SITE['VCshowUnitsAs']** specified in your _Settings.php_.  
 </dd>
 
