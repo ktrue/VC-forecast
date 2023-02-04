@@ -219,18 +219,14 @@ Ensure the permission on "VC-forecast-json-{n}-{units}.txt" cache file(s) are at
 
 **Demo:**[ **VC-forecast-demo.php** ](https://saratoga-weather.org/VC-forecast-demo.php)(note: uses UTF-8 only mode)  
 
-If Standalone and running in a custom page:  
-**Download:**[ **VC-forecast.css**](./VC-forecast.css) (Version 1.00 - 13-Jan-2022)  
-
 **Download**:[ **Icon Set** ](https://saratoga-weather.org/saratoga-icons2.zip)(upload to your website in the **/forecast/images** directory)  
 
 # Sample output
 ## English
-![English sample_output-1](https://user-images.githubusercontent.com/17507343/213339073-8373adc1-3013-4dc6-9f49-df9ec01a1890.png)
+![English Sample Output](https://user-images.githubusercontent.com/17507343/216792916-36c984da-109b-424e-aef5-8880bbe8fd6a.jpg)
 ## English (Hourly)
-![English sample_output-2](https://user-images.githubusercontent.com/17507343/213339076-f6a939e4-a3d2-4600-902e-8580e469fdbd.png)
+![English Sample Output](https://user-images.githubusercontent.com/17507343/216792917-1f562f65-8ddd-4690-b226-358c38397a86.jpg)
 ## Ελληνικά (Greek)
-![Greek sample_output-3](https://user-images.githubusercontent.com/17507343/213339077-cfd1e1c7-fff8-4b73-89b9-0f879f3985af.png)
+![Greek Sample Output](https://user-images.githubusercontent.com/17507343/216792918-5050733b-cb3f-46e9-95f4-689e21de04e3.jpg)
 ## Ελληνικά (Greek) Hourly
-![Greek sample_output-4](https://user-images.githubusercontent.com/17507343/213339071-a7669123-e2e1-425e-95e4-3b4f7e7f1ea7.png)
-
+![Greek Sample Output](https://user-images.githubusercontent.com/17507343/216792921-b4afd504-0fff-4d4a-a9f8-a3066b9c1273.jpg)
