@@ -10,7 +10,7 @@
 # Version 1.04 - 08-Dec-2018 - added translations for current conditions display
 # Version 1.05 - 10-Jan-2019 - added correction for Danish translation
 # Version 1.06 - 23-Jan-2019 - added translations for DS-forecast Hourly forecasts
-# Version 1.07 - 04-Feb-2023 - repurposed for VC-forecast use with Visualcrossing forecasts
+# Version 1.07 - 07-Feb-2023 - repurposed for VC-forecast use with Visualcrossing forecasts
 # NOTE: this file is required for translations by VC-forecast.php script.
 # Author: Ken True - https://saratoga-weather.org/
 # 
@@ -30,7 +30,7 @@ $verstring = '#
 # Version 1.04 - 08-Dec-2018 - added translations for current conditions display
 # Version 1.05 - 10-Jan-2019 - added correction for Danish translation
 # Version 1.06 - 23-Jan-2019 - added translations for DS-forecast Hourly forecasts
-# Version 1.07 - 04-Feb-2023 - repurposed for VC-forecast use with Visualcrossing forecasts
+# Version 1.07 - 07-Feb-2023 - repurposed for VC-forecast use with Visualcrossing forecasts
 ';
 #
 define('TRANTABLE',

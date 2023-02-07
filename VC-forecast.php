@@ -14,9 +14,9 @@
 // Version 1.09 - 23-Jan-2019 - added hourly forecast and tabbed display
 // Version 1.10 - 19-Jan-2022 - fix for PHP 8.1 Deprecated errata
 // Version 1.11 - 27-Dec-2022 - fixes for PHP 8.2
-// Version 2.00 - 04-Feb-2023 - rewrite to use Visualcrossing API for weather forecasts
+// Version 2.00 - 07-Feb-2023 - rewrite to use Visualcrossing API for weather forecasts
 //
-$Version = "VC-forecast.php (ML) Version 2.00 - 04-Feb-2023";
+$Version = "VC-forecast.php (ML) Version 2.00 - 07-Feb-2023";
 //
 // error_reporting(E_ALL);  // uncomment to turn on full error reporting
 //
@@ -740,6 +740,9 @@ array (
 	
 	#$VCforecastcond[$n] = trim($temp[0]); // take first one as summary.
   $VCforecastcond[$n] = $FCpart['conditions'];
+  if($doIconv) {
+		$VCforecastcond[$n] = iconv("UTF-8",$charsetOutput.'//IGNORE',$VCforecastcond[$n]);
+	}
 	if ($doDebug) {
       $Status .= "<!-- forecastcond[$n]='" . $VCforecastcond[$n] . "' -->\n";
 	}
