@@ -1,4 +1,4 @@
-<?php 
+<?php
 // VC-forecast.php script by Ken True - webmaster@saratoga-weather.org
 //    Forecast from visualcrossing.com - based on DS-forecast.php V1.11 - 27-Dec-2022
 //
@@ -15,8 +15,9 @@
 // Version 1.10 - 19-Jan-2022 - fix for PHP 8.1 Deprecated errata
 // Version 1.11 - 27-Dec-2022 - fixes for PHP 8.2
 // Version 2.00 - 07-Feb-2023 - rewrite to use Visualcrossing API for weather forecasts
+// Version 2.01 - 09-Feb-2023 - fix Notice errata on PHP 8.2
 //
-$Version = "VC-forecast.php (ML) Version 2.00 - 07-Feb-2023";
+$Version = "VC-forecast.php (ML) Version 2.01 - 09-Feb-2023";
 //
 // error_reporting(E_ALL);  // uncomment to turn on full error reporting
 //
@@ -891,9 +892,10 @@ if (isset($currently['datetimeEpoch']) ) { // only generate if we have the data
 	if (isset($currently['windspeed'])) {
 		$tWdir = VC_WindDir(round($currently['winddir'],0));
   $VCcurrentConditions .= $tranTab['Wind'].": <b>".VC_WindDirTrans($tWdir);
-  $VCcurrentConditions .= " ".round($currently['windspeed'],0).
-	   "-&gt;".round($currently['windgust'],0) . " $windUnit." .
-		"</b><br/>\n";
+  $VCcurrentConditions .= " ".round($currently['windspeed'],0);
+  $VCcurrentConditions .= isset($currently['windgust'])?
+	   "-&gt;".round($currently['windgust'],0):'';
+  $VCcurrentConditions .= " $windUnit." . "</b><br/>\n";
 	}
 	if (isset($currently['humidity'])) {
 	  $VCcurrentConditions .= $tranTab['Humidity'].": <b>".
