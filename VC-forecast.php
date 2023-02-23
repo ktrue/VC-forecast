@@ -16,8 +16,9 @@
 // Version 1.11 - 27-Dec-2022 - fixes for PHP 8.2
 // Version 2.00 - 07-Feb-2023 - rewrite to use Visualcrossing API for weather forecasts
 // Version 2.01 - 09-Feb-2023 - fix Notice errata on PHP 8.2
+// Version 2.02 - 23-Feb-2023 - fix Conditions distance display for km or miles and time displays on hourly/conditions
 //
-$Version = "VC-forecast.php (ML) Version 2.01 - 09-Feb-2023";
+$Version = "VC-forecast.php (ML) Version 2.02 - 23-Feb-2023";
 //
 // error_reporting(E_ALL);  // uncomment to turn on full error reporting
 //
@@ -246,11 +247,13 @@ $NWSiconlist = array(
 //
 
 $windUnits = array(
+ 'base' => 'm/s',
  'us' => 'mph',
  'metric' => 'km/h',
  'uk' => 'mph'
 );
 $UnitsTab = array(
+ 'base' => array('T'=>'&deg;K','W'=>'m/s','P'=>'hPa','R'=>'mm','D'=>'km'),
  'metric' => array('T'=>'&deg;C','W'=>'km/s','P'=>'hPa','R'=>'mm','D'=>'km'),
  'uk' => array('T'=>'&deg;C','W'=>'mph','P'=>'mb','R'=>'mm','D'=>'mi'),
  'us' => array('T'=>'&deg;F','W'=>'mph','P'=>'inHg','R'=>'in','D'=>'mi'),
@@ -259,7 +262,7 @@ $UnitsTab = array(
 if(isset($UnitsTab[$showUnitsAs])) {
   $Units = $UnitsTab[$showUnitsAs];
 } else {
-	$Units = $UnitsTab['si'];
+	$Units = $UnitsTab['metric'];
 }
 
 if(!function_exists('langtransstr')) {
@@ -337,7 +340,7 @@ if($charsetOutput == 'UTF-8') {
 	$Status .= "<!-- VClangCharsets\n".var_export($VClangCharsets,true)." \n-->\n";	
 }
 
-if(stripos($timeFormat,'g') !== false) {
+if($showUnitsAs == 'us' or strpos($timeFormat,'g') !== false) {
 	$showAMPMtime = true;
 	$Status .= "<!-- timeFormat='$timeFormat'. timeline hours displayed as am/pm -->\n";
 } else {
@@ -412,7 +415,7 @@ $doDebug = false;
 if (isset($_REQUEST['debug']) and strtolower($_REQUEST['debug'])=='y' ) {
   $doDebug = true;
 }
-$showTempsAs = ($showUnitsAs == 'us')? 'F':'C';
+$showTempsAs = $UnitsTab[$showUnitsAs]['T'];
 $Status .= "<!-- temps in $showTempsAs -->\n";
 
 $fileName = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/$VC_LATLONG/" .
@@ -664,8 +667,8 @@ array (
 
 #  extract the temperatures
 
-	  $VCforecasttemp[$n] = "<span style=\"color: #ff0000;\">".VC_round($FCpart['tempmax'],0)."&deg;$showTempsAs</span>";
-	  $VCforecasttemp[$n] .= "<br/><span style=\"color: #0000ff;\">".VC_round($FCpart['tempmin'],0)."&deg;$showTempsAs</span>";
+	  $VCforecasttemp[$n] = "<span style=\"color: #ff0000;\">".VC_round($FCpart['tempmax'],0)."$showTempsAs</span>";
+	  $VCforecasttemp[$n] .= "<br/><span style=\"color: #0000ff;\">".VC_round($FCpart['tempmin'],0)."$showTempsAs</span>";
 
 #  extract the icon to use
 	  $VCforecasticon[$n] = $FCpart['icon'];
@@ -715,9 +718,9 @@ array (
 		   $tranTab['Chance of precipitation']." $tstr".$VCforecastpop[$n]."%. ";
 	}
 
-  $VCforecasttext[$n] .= " ".$tranTab['High:']." ".VC_round($FCpart['tempmax'],0)."&deg;$showTempsAs. ";
+  $VCforecasttext[$n] .= " ".$tranTab['High:']." ".VC_round($FCpart['tempmax'],0)."$showTempsAs. ";
 
-  $VCforecasttext[$n] .= " ".$tranTab['Low:']." ".VC_round($FCpart['tempmin'],0)."&deg;$showTempsAs. ";
+  $VCforecasttext[$n] .= " ".$tranTab['Low:']." ".VC_round($FCpart['tempmin'],0)."$showTempsAs. ";
 
 	$tWdir = VC_WindDir(round($FCpart['winddir'],0));
   $VCforecasttext[$n] .= " ".$tranTab['Wind']." ".VC_WindDirTrans($tWdir);
@@ -775,7 +778,7 @@ array (
     $Status.= "<!-- preparing " . count($JSON['alerts']) . " warning links -->\n";
     foreach($JSON['alerts'] as $i => $ALERT) {
 			$expireUTC = strtotime($ALERT['ends']);
-      $expires = date('Y-m-d H:i T',$ALERT['endsEpoch']);
+      $expires = date($timeFormat,$ALERT['endsEpoch']);
       $Status.= "<!-- alert expires $expires (" . $ALERT['ends'] . ") -->\n";
 			$regions = '';
 			if(isset($ALERT['regions']) and is_array($ALERT['regions'])) {
@@ -852,9 +855,10 @@ if (isset($currently['datetimeEpoch']) ) { // only generate if we have the data
 	$tS = $currently['stations'][0]; // Name of first station in list
 	$tD = isset($JSON['stations'][$tS]['distance'])?$JSON['stations'][$tS]['distance']:0.0;
 	switch ($showUnitsAs) {
+		case 'base'  : $tD = round($tD/1000,1); break; // in km
 		case 'metric': $tD = round($tD/1000,1); break;
-		case 'us'    : $tD = $tD; break;
-		case 'uk'    : $tD = $tD; break;
+		case 'us'    : $tD = round($tD*0.000621371,1); break; // in miles
+		case 'uk'    : $tD = round($tD*0.000621371,1); break;
 		default      : $tD = $tD;
 	}
 	$t = $tranTab['Weather conditions at 999 from forecast point.'];
@@ -925,12 +929,14 @@ if (isset($currently['datetimeEpoch']) ) { // only generate if we have the data
 ';
 	if(isset($currently['sunriseEpoch']) and 
 	   isset($currently['sunsetEpoch']) ) {
+		 $tFMT = 'H:i';
+		 if($showUnitsAs == 'us' or strpos($timeFormat,'g') !== false) {$tFMT = 'g:ia'; }
 	  $VCcurrentConditions .= 
 	  $tranTab['Sunrise'].': <b>'. 
-		   date('H:i',$currently['sunriseEpoch']) . 
+		   date($tFMT,$currently['sunriseEpoch']) . 
 			 "</b><br/>\n" .
 		$tranTab['Sunset'].': <b>'.
-	     date('H:i',$currently['sunsetEpoch']) . 
+	     date($tFMT,$currently['sunsetEpoch']) . 
 			 "</b><br/>\n" ;
 	}
 	$VCcurrentConditions .= '
@@ -2342,7 +2348,7 @@ function VC_gen_hourforecast($FCpart) {
   $VCH = array();
 	
   //$newIcon = '<td>';
-  if($showUnitsAs == 'us') {
+  if($showUnitsAs == 'us' or strpos($timeFormat,'g') !== false) {
 	  $t = explode(' ',date('g:ia n/j l',$FCpart['time']));
 	} else {
 	  $t = explode(' ',date('H:i j/n l',$FCpart['time']));
@@ -2369,7 +2375,7 @@ function VC_gen_hourforecast($FCpart) {
 		 $condition;
 	$VCH['icon'] = $newIcon;
 
-	$VCH['temp'] = '<b>'.VC_round($FCpart['temperature'],0)."</b>&deg;$showTempsAs";
+	$VCH['temp'] = '<b>'.VC_round($FCpart['temperature'],0)."</b>$showTempsAs";
 	$VCH['UV'] = 'UV: <b>'.$FCpart['uvIndex']."</b>";
 
 	$tWdir = VC_WindDir(round($FCpart['windBearing'],0));
